@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <title>Box Reports</title>
+    <link rel='icon' type='image/x-icon' href='fav.jpg'>
+    <style>
+        .split {
+            height: 100%;
+            width: 50%;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            overflow-x: hidden;
+            padding-top: 20px;
+        }
+
+        .left {
+            left: 0;
+            background-color: rgb(159, 239, 0);
+            color: black
+        }
+
+        .right {
+            right: 0;
+            background-color: rgb(246, 6, 36);
+            color: white;
+        }
+
+        .centered {
+            position: absolute;
+            top: 0;
+            left: 40%;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="split left">
+        <div class="centered">
+            <h2>Hack The Box</h2>
+            <a href="Precious/Precious.html">Precious</a>
+        </div>
+    </div>
+
+    <div class="split right">
+        <div class="centered">
+            <h2>Offsec Playground</h2>
+            <a href="Wpwn/Wpwn.html">Wpwn</a>
+        </div>
+    </div>
+
+</body>
+
+</html>
