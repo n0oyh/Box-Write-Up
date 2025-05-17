@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Wpwn</title>
+  <style>
+    body {
+      text-align: center;
+      color: black;
+      background-color: whitesmoke;
+    }
+  </style>
+</head>
+<body>
+  <h1>Offsec - Wpwn</h1>
+  <p>Nmapping the given IP:</p>
+  <img src="img/1.png" alt="1" width=50% height=50%>
+  <p>Pasting in the IP address takes us to the http server on port 80.</p>
+  <img src="img/2.png" alt="2" width=50% height=50%>
+  <p>Appending robots.txt to the end gives us another page.</p>
+  <img src="img/3.png" alt="3" width=55% height=50% >
+  <p>Guessing there are other pages we use dirb to discover them.</p>
+  <p>This leads us to IP/wordpress, which shows a webpage.</p>
+  <img src="img/4.png" alt="4" width=55% height=50% >
+  <p>Clicking the login link lead to a sign-in page.</p>
+  <img src="img/5.png" alt="5" width=55% height=50%>
+  <p>Brute forcing random passwords did not work, so I ran wpscan to see if other exploits are present.</p>
+  <img src="img/6.png" alt="6" width=55% height=50%>
+  <p>Using the exploit vulnerability from <a href="">wpscan</a>, we can run commands</p>
+  <p>&lt;pre&gt;system('cat /etc/passwd')&lt;pre&gt;</p>
+  <img src="img/7.png" alt="7" width=55% height=50%>
+  <p>This shows the passwords of users, which takis is one of them.</p>
+  <p>We can cheese the flag by using the find command and running. </p>
+  <p>&lt;pre&gt;system('cat /var/www/local.txt')&lt;pre&gt;</p>
+
+  <h3>Getting into Root</h3>
+  <p>Since most wordpress use a database we can assume there is one and try to see if they hold creds.</p>
+  <p>Searching using the social-warfare exploit we found</p>
+  <p>&lt;pre&gt;system('cat /var/www/html/wordpress/wp-config.php')&lt;pre&gt;</p>
+  <img src="img/8.png" alt="8" width=55% height=50%>
+  <p>By inspecting the source page we can see some creds listed in plain text.</p>
+  <p>Using the creds for takis ssh words are we gain access.</p>
+  <p>Running sudo -l, and we see takis has access to everything.</p>
+  <img src="img/9.png" alt="9" width=55% height=50%>
+  <p>A quick sudo su get us into root, which we find the last flag in the root folder.</p>
+  <img src="img/10.png" alt="10" width=55% height=50%>
+</body>
+
+</html>
