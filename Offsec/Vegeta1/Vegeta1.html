@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Vegeta1</title>
+    <style>
+        body {
+            text-align: center;
+            color: black;
+            background-color: whitesmoke;
+        }
+        img {
+            width: 50%;
+            height: 50%;
+        }
+        p {
+            padding-left: 25%;
+            padding-right: 25%;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Vegeta1</h1>
+    <h2>About This Lab</h2>
+    <p>Utilize enumeration and web enumeration techniques to identify vulnerabilities. Engage in understanding Morse
+      code and implement privilege escalation strategies to enhance your access. This lab is designed to capitalize on
+      your skills in vulnerability exploitation.</p>
+    <h2>Recon</h2>
+    <p>Running a nmap scan on the giving IP gives us:</p>
+    <img src="img/1.png" alt="1">
+    <p>We can see ssh open but don't have any creds yet so that can wait for now, so it on to port 80, an http website.</p>
+    <h2>Port 80</h2>
+    <p>Visiting the website we get a simple one-liner with an image of Vegeta.</p>
+    <img src="img/2.png" alt="2">
+    <p>With nothing going on and standing out let do some simple checks then. A source code check if they have hidden
+      anything in the HTML.. Nothing. What about robots.txt? OOo, we are given a directory to explore.</p>
+    <img src="img/3.png" alt="3">
+    <p>Let's explore what /find_me has to offer.</p>
+    <img src="img/4.png" alt="4">
+    <p>We can see an HTML file in this directory, which leads to nothing really visible on the surface level.
+      Let's check the source code again. OOOO, scrolling down we can some a super long comment, which seems to be
+      encrypted. Let's decrypt it.</p>
+    <img src="img/5.png" alt="5">
+    <p>Whipping out the cyberchef using base64 decode, we get more random jumbo, but it looks like simialr to what we
+      found. Let do another base64 decode. We got a PNG header, OOOO. Lets downlad it off cyberchef and see our
+      image.</p>
+    <img src="img/6.png" alt="6">
+    <p>We were givein a QR code, interesting. We can scan this code in two ways, with your phone like a normal person
+      or with zbarimg.</p>
+    <img src="img/7.png" alt="7">
+    <p>Either way you do it you get Password : topshellv. <br>
+      Let's run a gobuster scan to see if we can use it, while it scan lets paste in google if anything comes up.
+      Mine top result came back with a GitHub page with the. </p>
+    <img src="img/8.png" alt="8">
+    <p>So I am assuming it's not something we can use. Let's check if our gobuster scan has anything.</p>
+    <img src="img/9.png" alt="9">
+    <p>Let's check out /admin</p>
+    <img src="img/10.png" alt="10">
+    <p>Admin.php doesnt really help us since we cant modify it anyway. HMMMMM. <br>
+      Lets directory scan this box again but since the name of this box was Vegeta, try some Dragon Ball character
+      names instead.</p>
+    <img src="img/11.png" alt="11">
+    <p>Let's check out /bulma</p>
+    <img src="img/12.png" alt="12">
+    <p>Downloading the .wav file plays some beeps and boops in a pattern. MORSE CODE. <br>
+      Now being in the 21 first century, few people know morse code off the top of their heads, so it's gonna be a
+      little painful discerning the beeps and boops. So smack that file in them chatgpt and pray then get it. <br>
+      Mine was able to spit out the morse code pretty clean: <br>
+      ..- ... . .-. / ---... / - .-. ..- -. -.- ... / .--. .- ... ... .-- --- .-. -.. / ---... / ..- ... ...-- .-. -.--.
+      ... / .. -. / -.. --- .-.. .-.. .- .-. ... / ... -.-- -- -... --- .-.. -.--.- <br>
+      Let's get this translated to english <br>
+      USER : TRUNKS PASSWORD : --------------------- <br>
+      We now have access to a set of username and password, time to ssh.</p>
+    <h2>SSH</h2>
+    <p>With the creds we are in!!!</p>
+    <img src="img/13.png" alt="13">
+    <p>First flag is ours.</p>
+    <img src="img/14.png" alt="14">
+    <h2>Getting Root</h2>
+    <p>As always, since we have a password lets check if sudo can be used. AND NOPE. <br>
+      Ok, lets see what we are working with, a ls -al in the home directory.</p>
+    <img src="img/15.png" alt="15">
+    <p>Let's check the bash_history file if they left any clues.</p>
+    <img src="img/16.png" alt="16">
+    <p>OOO clues left indeed. We can the user was trying to make a sudo like user with all its creds for us to know.
+      Let's see if we have any perms for /etc/passwd.</p>
+    <img src="img/17.png" alt="17">
+    <p>We very much do, lets try the previous commands. <br>
+      perl -le 'print crypt("Password@973","addedsalt")'</p>
+    <img src="img/18.png" alt="18">
+    <p>echo "Tom:ad7t5uIalqMws:0:0:User_like_root:/root:/bin/bash" >> /etc/passwd <br>
+    not into Tom</p>
+    <img src="img/19.png" alt="19">
+    <p>BOOM, root access granted. Time for our flag.</p>
+    <img src="img/20.png" alt="20">
+    <p>I wonder, which one it is?</p>
+    <p></p>
+</body>
+</html>
